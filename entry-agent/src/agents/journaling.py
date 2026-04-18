@@ -5,7 +5,7 @@ from livekit.agents import Agent, ChatContext, RunContext, function_tool
 from tools.journal_tools import JournalTools
 
 
-class JournalingAgent(Agent):
+class JournalingAgent(Agent, JournalTools):
     def __init__(self, chat_ctx: Optional[ChatContext] = None):
         super().__init__(
             instructions="""You are a journaling and reflection specialist. Your goal is to help the user offload top-of-mind thoughts, reflect on their day, and journal their emotions.
@@ -21,9 +21,7 @@ class JournalingAgent(Agent):
             Be empathetic, supportive, and encourage deep reflection.
             """,
             chat_ctx=chat_ctx,
-            tools=[JournalTools()]
         )
-
     async def on_enter(self) -> None:
         await self.session.generate_reply(instructions="Introduce yourself as the Journaling Assistant and ask what's on the user's mind or if they'd like to reflect on their day.")
 

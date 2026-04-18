@@ -13,14 +13,14 @@ class TherapyTools:
         self,
         context: RunContext,
         session_id: str,
-        emotions: list[dict[str, float]],
-        summary: Optional[str] = None
+        emotions_json: str,
+        summary: Optional[str] = None,
     ):
         """Logs an emotional event with specific intensities for various emotions.
 
         Args:
             session_id: The current call session ID.
-            emotions: A list of objects with 'emotion_id' and 'intensity' (0.0 to 1.0).
+            emotions_json: A JSON string list of objects with 'emotion_id' and 'intensity' (0.0 to 1.0). (e.g., '[{"emotion_id": "joy", "intensity": 0.8}]')
             summary: A brief context or summary of the emotional event.
         """
         user_id = context.userdata.get("user_id")
@@ -28,21 +28,23 @@ class TherapyTools:
             return "Error: User ID not found."
 
         try:
+            import json
+            emotions = json.loads(emotions_json)
             # 1. Create the emotional event
             event_data = {
                 "user_id": user_id,
                 "session_id": session_id,
-                "context_summary": summary
+                "context_summary": summary,
             }
             event_resp = supabase.table("emotional_events").insert(event_data).execute()
-            event_id = event_resp.data[0]['id']
+            event_id = event_resp.data[0]["id"]
 
             # 2. Add emotion scores
             for emotion in emotions:
                 score_data = {
                     "event_id": event_id,
-                    "emotion_id": emotion['emotion_id'],
-                    "intensity": emotion['intensity']
+                    "emotion_id": emotion["emotion_id"],
+                    "intensity": emotion["intensity"],
                 }
                 supabase.table("event_emotion_scores").insert(score_data).execute()
 
@@ -50,6 +52,7 @@ class TherapyTools:
         except Exception as e:
             logger.error(f"Error logging emotional event: {e}")
             return f"Failed to log emotional event: {e!s}"
+
 
     @function_tool()
     async def get_emotion_dictionary(self, context: RunContext):

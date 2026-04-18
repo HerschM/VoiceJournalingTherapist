@@ -70,14 +70,14 @@ class TaskHabitTools:
         self,
         context: RunContext,
         habit_name: str,
-        metrics: dict[str, Any],
+        metrics_json: str,
         session_id: Optional[str] = None
     ):
         """Logs a habit entry with specific metrics.
 
         Args:
             habit_name: The name of the habit (e.g., 'Gym', 'Sleep').
-            metrics: A dictionary of metrics for the habit (e.g., {'reps': 10, 'weight': 135}).
+            metrics_json: A JSON string of metrics for the habit (e.g., '{"reps": 10, "weight": 135}').
             session_id: The current call session ID.
         """
         user_id = context.userdata.get("user_id")
@@ -85,6 +85,8 @@ class TaskHabitTools:
             return "Error: User ID not found."
 
         try:
+            import json
+            metrics = json.loads(metrics_json)
             # First, find or create the habit
             habit_resp = supabase.table("habits").select("id").eq("user_id", user_id).eq("name", habit_name).execute()
             if not habit_resp.data:

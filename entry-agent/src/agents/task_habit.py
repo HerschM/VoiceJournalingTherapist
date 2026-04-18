@@ -5,7 +5,7 @@ from livekit.agents import Agent, ChatContext, RunContext, function_tool
 from tools.task_habit_tools import TaskHabitTools
 
 
-class TaskHabitAgent(Agent):
+class TaskHabitAgent(Agent, TaskHabitTools):
     def __init__(self, chat_ctx: Optional[ChatContext] = None):
         super().__init__(
             instructions="""You are a productivity and habit tracking specialist. Your goal is to help the user be more productive and centered throughout the day.
@@ -17,14 +17,11 @@ class TaskHabitAgent(Agent):
 
             Use the `create_task` tool to add new tasks or reminders.
             Use the `list_tasks` tool to review what's pending.
-            Use the `log_habit` tool to track habit completion with metrics.
+            Use the `log_habit` tool to track habit completion with metrics. Note that `metrics_json` must be a valid JSON string.
 
             Be encouraging, focused, and help the user stay on track with their goals.
-            """,
-            chat_ctx=chat_ctx,
-            tools=[TaskHabitTools()]
+            """,            chat_ctx=chat_ctx,
         )
-
     async def on_enter(self) -> None:
         await self.session.generate_reply(instructions="Introduce yourself as the Productivity Assistant and ask if the user wants to plan their day or log a habit.")
 

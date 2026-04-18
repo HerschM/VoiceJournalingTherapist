@@ -62,7 +62,7 @@ async def my_agent(ctx: JobContext):
 
     # In a real app, you'd get the user_id from participant metadata or auth token
     # For now, we'll use a placeholder or check room metadata
-    user_id = ctx.room.metadata or "7c9e66ab-6cc2-4d7a-8f55-1f9f257d0796" # Placeholder UUID
+    user_id = ctx.room.metadata or "8e71cdda-0475-40f5-9da9-a73ffee906ce" # Placeholder UUID
 
     session_id = await create_supabase_session(user_id, ctx.room.name)
 
